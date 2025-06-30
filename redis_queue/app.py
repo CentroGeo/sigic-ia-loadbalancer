@@ -9,7 +9,9 @@ import socket
 import requests
 import time
 
-r = Redis(host='10.2.13.44', port=6379)
+host=os.getenv("REDIS_HOST", "localhost")
+
+r = Redis(host=host, port=6379)
 q = Queue(connection=r)
 
 app = Flask(__name__)
