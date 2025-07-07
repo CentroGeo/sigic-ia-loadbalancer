@@ -11,16 +11,20 @@ def chatear(context):
     # Crear el prompt
     prompt = context
     print(prompt)
-
-    #print(prompt)
+    
     try:
         ############### usando nuestro gpt
         # Construir el cuerpo de la solicitud
         body = {
             "messages": [
-                {"role": "system", "content": "Eres un asistente que puede responder preguntas basadas en noticias."},
+                # {"role": "system", "content": "Eres un asistente que puede responder preguntas basadas en noticias."},
                 {"role": "user", "content": prompt}
-            ]
+            ],
+            'user_id': 'ec5c0c31-4ee1-4407-bcfc-c5a73b7db878',
+            'chat_id': 65,
+            'type': "Preguntar",
+            'workspace_id': 6,
+            'project_id': [11]
             # ~ "stream": False,
             # ~ "include_sources": False
         }
@@ -29,7 +33,7 @@ def chatear(context):
         body = {k: v for k, v in body.items() if v is not None}
 
         # URL del endpoint
-        url = "http://10.2.102.75:8000/start" #ip de mi local
+        url = "http://localhost:8000/start" #ip de mi local
 
         # Realizar la solicitud
         init_date = time.time()  #para tomar el tiempo
@@ -67,7 +71,7 @@ def chatear(context):
 
 def health(uuid):
     try:
-        url = "http://10.2.102.75:8000/process/"+uuid #ip de mi local
+        url = "http://localhost:8000/process/"+uuid #ip de mi local
 
         respuesta = requests.get(
             url,

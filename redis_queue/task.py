@@ -5,12 +5,13 @@ import requests
 import json
 import os 
 
-host = os.getenv("BALANCER_HOST", "nginx")
-port = os.getenv("BALANCER_PORT", "8080")
+host_load_balance = os.getenv("BALANCER_HOST", "nginx")
+port_load_balance = os.getenv("BALANCER_PORT", "8080")
+
 
 def background_task(data):
     print("Procesando en segundo plano:", type(data))
-    url = f"http://{host}:{port}/v1/chat/completions"
+    url = f"http://{host_load_balance}:{port_load_balance}/v1/chat/completions"
     
     init_date = time.time()
     respuesta = requests.post(

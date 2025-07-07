@@ -8,20 +8,53 @@ import os
 import socket
 import requests
 import time
+import json
+import uuid
 
-host=os.getenv("REDIS_HOST", "localhost")
+host_redis = os.getenv("REDIS_HOST", "localhost")
+port_redis = os.getenv("REDIS_PORT", "6379")
+host_load_balance = os.getenv("BALANCER_HOST", "nginx")
+port_load_balance = os.getenv("BALANCER_PORT", "8080")
 
-r = Redis(host=host, port=6379)
+r = Redis(host=host_redis, port=port_redis)
 q = Queue(connection=r)
 
 app = Flask(__name__)
     
 @app.route("/start", methods=["POST"])
 def start():
-    job = q.enqueue(background_task, request.data, retry=Retry(max=10, interval=20))
-    print(f"Job ID: {job.id}")
-    
-    return jsonify({"job_id": job.id})
+    try:
+        job_uuid = str(uuid.uuid4())
+        send_data_chat           = json.loads(request.data)
+        
+        if(send_data_chat["type"] == "Preguntar"):
+            send_data_chat["job_id"] = job_uuid
+            
+            url = f"http://{host_load_balance}:{port_load_balance}/project/chat/register/v3"
+            
+            respuesta = requests.post(
+                url,
+                headers={"Content-type": "application/json"},
+                data=json.dumps(send_data_chat),
+            )
+
+            if respuesta.status_code == 200:
+                print("Solicitud exitosa")
+                send_data_chat["chat_id"] = respuesta.json()["chat_id"]
+                job = q.enqueue(background_task, json.dumps(send_data_chat), job_id=job_uuid, retry=Retry(max=10, interval=20))
+                
+                return jsonify({"job_id": job.id})
+            else:
+                return jsonify({"error": str(respuesta.status_code)})
+                
+        else:
+            job = q.enqueue(background_task, request.data, job_id=job_uuid, retry=Retry(max=10, interval=20))
+            return jsonify({"job_id": job.id})
+        
+        
+    except Exception as e:
+        return jsonify({"error": str(e)})
+            
 
 
 @app.route("/process/<job_id>", methods=["GET"])
