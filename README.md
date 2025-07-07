@@ -1,3 +1,8 @@
+# Run composer
+docker-compose up --build -d
+
+
+# Run one a one
 # run apps background
 docker-compose up --build
 
@@ -12,3 +17,5 @@ docker exec -it redis redis-cli
 
 # stop apps
 docker-compose down
+
+
