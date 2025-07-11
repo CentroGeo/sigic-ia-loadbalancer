@@ -10,7 +10,7 @@ port = os.getenv("BALANCER_PORT", "8080")
 
 def background_task(data):
     print("Procesando en segundo plano:", type(data))
-    url = f"http://{host}:{port}/v1/chat/completions"
+    url = f"http://{host}:{port}/api/chat/v1"
     
     init_date = time.time()
     respuesta = requests.post(
