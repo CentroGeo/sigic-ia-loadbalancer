@@ -1,4 +1,3 @@
-
 import time 
 import random
 import requests
@@ -31,7 +30,7 @@ def background_task(data):
             print("tiempo (segundos):", delta_date)
             
             #respuesta_chatbot = data["choices"][0]["message"]["content"]
-            respuesta_chatbot = data['messages']
+            respuesta_chatbot = data['message']
             #print("\n\n**** Respuesta modelo: \n",respuesta_chatbot)
             return respuesta_chatbot                
         
@@ -42,5 +41,5 @@ def background_task(data):
     else:
         print(f"Error en la solicitud: {respuesta.status_code}")
         print(respuesta.text)
-        raise Exception("Error intencional para probar retry")
+        raise Exception("Error intencional para probar retry", respuesta.text)
         
