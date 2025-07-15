@@ -17,10 +17,12 @@ def chatear(context):
         ############### usando nuestro gpt
         # Construir el cuerpo de la solicitud
         body = {
+            "model": "deepseek-r1",
             "messages": [
                 {"role": "system", "content": "Eres un asistente que puede responder preguntas basadas en noticias."},
                 {"role": "user", "content": prompt}
-            ]
+            ],
+            "think": False,
             # ~ "stream": False,
             # ~ "include_sources": False
         }

@@ -30,7 +30,8 @@ def background_task(data):
             delta_date = end_date - init_date
             print("tiempo (segundos):", delta_date)
             
-            respuesta_chatbot = data["choices"][0]["message"]["content"]
+            #respuesta_chatbot = data["choices"][0]["message"]["content"]
+            respuesta_chatbot = data['messages']
             #print("\n\n**** Respuesta modelo: \n",respuesta_chatbot)
             return respuesta_chatbot                
         
