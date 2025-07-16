@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, Response
+from flask_cors import CORS
 from rq import Queue, Worker, Retry
 from rq.job import Job
 from redis import Redis
@@ -15,7 +16,9 @@ r = Redis(host=host, port=6379)
 q = Queue(connection=r)
 
 app = Flask(__name__)
-    
+#CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*", "allow_headers": "*", "expose_headers": "*"}})
+
 @app.route("/start", methods=["POST"])
 def start():
     job = q.enqueue(background_task, request.data, retry=Retry(max=10, interval=20))
