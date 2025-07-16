@@ -17,7 +17,7 @@ q = Queue(connection=r)
 
 app = Flask(__name__)
 #CORS(app)
-CORS(app, resources={r"/api/*": {"origins": "*", "allow_headers": "*", "expose_headers": "*"}})
+CORS(app, resources={r"/*": {"origins": "*", "allow_headers": "*", "expose_headers": "*"}})
 
 @app.route("/start", methods=["POST"])
 def start():
