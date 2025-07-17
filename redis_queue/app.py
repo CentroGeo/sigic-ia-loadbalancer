@@ -9,6 +9,7 @@ import os
 import socket
 import requests
 import time
+import json
 
 host=os.getenv("REDIS_HOST", "localhost")
 
@@ -37,7 +38,7 @@ def health(job_id):
                 status = job.get_status()
                 result = job.result
                 
-                yield f"data: {status}\n\n result: {result}\n\n"
+                yield f"data: {json.dumps({'status': status, 'result': result})}\n\n"
                 
                 if status in ["finished", "failed"]:
                     break
