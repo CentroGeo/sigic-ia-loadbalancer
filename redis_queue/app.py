@@ -38,7 +38,7 @@ def health(job_id):
                 status = job.get_status()
                 result = job.result
                 
-                yield f"{json.dumps({'status': status, 'result': result})}"
+                yield f"data: {json.dumps({'status': status, 'result': result})}\n\n"
                 
                 if status in ["finished", "failed"]:
                     break
