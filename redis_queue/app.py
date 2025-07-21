@@ -10,10 +10,12 @@ import socket
 import requests
 import time
 import json
+import uuid
 
 host=os.getenv("REDIS_HOST", "localhost")
 
 r = Redis(host=host, port=6379)
+redis_dis = Redis(host=host, port=6379, decode_responses=True)
 q = Queue(connection=r)
 
 app = Flask(__name__)
@@ -22,11 +24,14 @@ CORS(app, resources={r"/*": {"origins": "*", "allow_headers": "*", "expose_heade
 
 @app.route("/start", methods=["POST"])
 def start():
-    job = q.enqueue(background_task, request.data, retry=Retry(max=10, interval=20))
+    session_id = str(uuid.uuid4())
+    data = json.loads(request.data)
+    data["session_id"] = session_id
+    
+    job = q.enqueue(background_task, json.dumps(data), job_id=session_id, retry=Retry(max=10, interval=20))
     print(f"Job ID: {job.id}")
     
-    return jsonify({"job_id": job.id})
-
+    return jsonify({"job_id": job.id, 'session_id': session_id})
 
 @app.route("/process/<job_id>", methods=["GET"])
 def health(job_id):
@@ -48,7 +53,6 @@ def health(job_id):
                 yield f"data: {e}\n\n"
                 break
 
-            
     return Response(event_stream(), mimetype="text/event-stream")
 
 
@@ -71,6 +75,40 @@ def start_worker():
 def status():
     register = q.job_ids
     return jsonify({"hostname": socket.gethostname(), "job_ids": register})
+
+@app.route("/stream/<session_id>", methods=["GET"])
+def stream_from_redis(session_id):
+    if not session_id:
+        return jsonify({"error": "Missing session_id"}), 400
+
+    stream_key = f"stream:{session_id}"
+    done_key = f"stream_done:{session_id}"
+
+    def generate():
+        last_index = 0
+        job = Job.fetch(session_id, connection=r)
+            
+        while True:
+            status = job.get_status()
+            
+            messages = redis_dis.lrange(stream_key, last_index, -1)
+            for msg in messages:
+                info = {
+                    "status": status,
+                    "message": msg
+                }
+                yield f"data: {json.dumps(info)}\n\n"
+            last_index += len(messages)
+                
+            # Terminar si hay señal de finalización
+            if redis_dis.get(done_key):
+                yield "event: done\ndata: [STREAM_COMPLETED]\n\n"
+                break
+
+            time.sleep(0.5)
+
+    return Response(generate(), mimetype="text/event-stream")
+
 
 if __name__ == "__main__":
     Process(target=start_worker).start()
