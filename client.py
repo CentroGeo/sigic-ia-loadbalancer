@@ -17,12 +17,15 @@ def chatear(context):
         ############### usando nuestro gpt
         # Construir el cuerpo de la solicitud
         body = {
+            "user_id": "c5461377-f021-402a-9700-a6d43c82e30c",
+            "type": "Preguntar",
             "model": "deepseek-r1",
             "messages": [
                 {"role": "system", "content": "Eres un asistente que puede responder preguntas basadas en noticias."},
                 {"role": "user", "content": prompt}
             ],
             "think": False,
+            "chat_id":0,
             # ~ "stream": False,
             # ~ "include_sources": False
         }
@@ -71,7 +74,7 @@ def chatear(context):
 
 def health(uuid):
     try:
-        url = "http://localhost:8000/process/"+uuid #ip de mi local
+        url = "http://localhost:8000/stream/"+uuid #ip de mi local
 
         respuesta = requests.get(
             url,

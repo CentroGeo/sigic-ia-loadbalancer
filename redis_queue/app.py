@@ -12,10 +12,13 @@ import time
 import json
 import uuid
 
-host=os.getenv("REDIS_HOST", "localhost")
+redis_host = os.getenv("REDIS_HOST", "localhost")
+redis_port = os.getenv("REDIS_PORT", "6379")
+load_balance_host = os.getenv("BALANCER_HOST", "nginx")
+load_balance_port = os.getenv("BALANCER_PORT", "8080")
 
-r = Redis(host=host, port=6379)
-redis_dis = Redis(host=host, port=6379, decode_responses=True)
+r = Redis(host=redis_host, port=redis_port)
+redis_dis = Redis(host=redis_host, port=redis_port, decode_responses=True)
 q = Queue(connection=r)
 
 app = Flask(__name__)
@@ -26,12 +29,30 @@ CORS(app, resources={r"/*": {"origins": "*", "allow_headers": "*", "expose_heade
 def start():
     session_id = str(uuid.uuid4())
     data = json.loads(request.data)
+    
     data["session_id"] = session_id
-    
-    job = q.enqueue(background_task, json.dumps(data), job_id=session_id, retry=Retry(max=10, interval=20))
-    print(f"Job ID: {job.id}")
-    
-    return jsonify({"job_id": job.id, 'session_id': session_id})
+    if(data["type"] == "Preguntar"):
+        url = f"http://{load_balance_host}:{load_balance_port}/api/chat/history/generate"
+            
+        respuesta = requests.post(
+            url,
+            headers={"Content-type": "application/json"},
+            data=json.dumps(data),
+        )
+
+        if respuesta.status_code == 200:
+            data["chat_id"] = respuesta.json()["chat_id"]
+            print("Solicitud exitosa!!!", data["chat_id"])
+            job = q.enqueue(background_task, json.dumps(data), job_id=session_id, retry=Retry(max=10, interval=20))
+            
+            return jsonify({"job_id": job.id, 'session_id': session_id})
+        else:
+            return jsonify({"error": str(respuesta.status_code)})            
+
+    else:
+        job = q.enqueue(background_task, json.dumps(data), job_id=session_id, retry=Retry(max=10, interval=20))
+        print(f"Job ID: {job.id}")
+        return jsonify({"job_id": job.id, 'session_id': session_id})    
 
 @app.route("/process/<job_id>", methods=["GET"])
 def health(job_id):
@@ -90,7 +111,10 @@ def stream_from_redis(session_id):
             
         while True:
             status = job.get_status()
+            result = job.result
             
+            yield f"status: {json.dumps({'status': status, 'result': result})}\n\n"
+                
             messages = redis_dis.lrange(stream_key, last_index, -1)
             for msg in messages:
                 info = {
