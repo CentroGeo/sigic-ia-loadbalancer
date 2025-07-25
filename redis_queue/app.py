@@ -135,7 +135,9 @@ def stream_from_redis(session_id):
 
 
 if __name__ == "__main__":
-    Process(target=start_worker).start()
+    for _ in range(2):
+        Process(target=start_worker).start()
+        
     port = int(os.environ.get("PORT", 8000))
     app.run(host='0.0.0.0', port=port)
 
