@@ -70,21 +70,23 @@ def background_task(data):
 
             for line in resp.iter_lines(decode_unicode=True):
                 if line:
-
+                    #line = line.replace("data: ", "")
+                    #print("line: ",line)
                     
                     try:
-                        print(f"[DEBUG] tipo de line: {type(line)} - contenido: {repr(line)}")
+                        #print(f"[DEBUG] tipo de line: {type(line)} - contenido: {repr(line)}")
                         if line.startswith("b'") or line.startswith('b"'):
                             line_bytes = ast.literal_eval(line)
                             line = line_bytes.decode("utf-8")
-                            
+                        #print(line)
                         json_data = json.loads(line)
                         content = json_data["message"]["content"]
-                        print(f"[Stream] {content}")
+                        #print(f"[Stream] {content}")
+                        print(content)
                         r.rpush(f"stream:{session_id}", content)
                     except json.JSONDecodeError as e:
                         print(f"[ERROR] JSON inválido: {e} {line}")
-                    time.sleep(0.2)
+                    time.sleep(0.07)
 
             r.set(f"stream_done:{session_id}", "1", ex=3600)
             total_time = round(time.time() - init_time, 2)

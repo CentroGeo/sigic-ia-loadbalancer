@@ -29,9 +29,11 @@ CORS(app, resources={r"/*": {"origins": "*", "allow_headers": "*", "expose_heade
 def start():
     session_id = str(uuid.uuid4())
     data = json.loads(request.data)
+    print("####START!!!!!")
     
     data["session_id"] = session_id
-    if(data["type"] == "Preguntar"):
+    #if(data["type"] == "Preguntar" or data["type"] == "RAG"):
+    if(data["chat_id"] == 0):
         url = f"http://{load_balance_host}:{load_balance_port}/api/chat/history/generate"
             
         respuesta = requests.post(
@@ -43,9 +45,10 @@ def start():
         if respuesta.status_code == 200:
             data["chat_id"] = respuesta.json()["chat_id"]
             print("Solicitud exitosa!!!", data["chat_id"])
+            
             job = q.enqueue(background_task, json.dumps(data), job_id=session_id, retry=Retry(max=10, interval=20))
             
-            return jsonify({"job_id": job.id, 'session_id': session_id})
+            return jsonify({"job_id": job.id, 'session_id': session_id, "chat_id":data["chat_id"]})
         else:
             return jsonify({"error": str(respuesta.status_code)})            
 
@@ -69,7 +72,7 @@ def health(job_id):
                 if status in ["finished", "failed"]:
                     break
 
-                time.sleep(10)
+                time.sleep(0.2)
             except Exception as e:
                 yield f"data: {e}\n\n"
                 break
@@ -129,7 +132,7 @@ def stream_from_redis(session_id):
                 yield "event: done\ndata: [STREAM_COMPLETED]\n\n"
                 break
 
-            time.sleep(0.5)
+            #time.sleep(0.5)
 
     return Response(generate(), mimetype="text/event-stream")
 
