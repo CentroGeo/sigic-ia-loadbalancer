@@ -8,7 +8,7 @@ import uuid
 import ast
 
 host = os.getenv("BALANCER_HOST", "nginx")
-port = os.getenv("BALANCER_PORT", "8080")
+port = os.getenv("BALANCER_PORT", "8181")
 host_redis = os.getenv("REDIS_HOST", "localhost")
 
 
