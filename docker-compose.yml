@@ -1,17 +1,24 @@
 services:
   nginx:
-    image: nginx:latest
+    #image: nginx:latest
+    build:
+      context: ./nginx-conf
+      dockerfile: dockerfile
     container_name: llm-lb
-    ports:
-      - "8181:8080"
-    volumes:
-      - ./nginx-conf/nginx.conf:/etc/nginx/nginx.conf:ro
+    # ports:
+    #   - "8181:8080"
+    #volumes:
+      #- ./nginx-conf/nginx.conf:/etc/nginx/nginx.conf:ro
+      #- ./nginx-conf/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
     depends_on:
       - flask-app
     extra_hosts:
-      - "host.docker.internal:host-gateway"
-    networks:
-      - red_geolex
+      - "modulo-ia-django:host-gateway"
+      - "redis:host-gateway"
+      - "flask-app:host-gateway"
+    # networks:
+    #   - red_geolex
+    network_mode: host
 
   redis:
     image: redis:latest
