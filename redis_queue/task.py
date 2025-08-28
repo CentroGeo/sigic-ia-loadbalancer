@@ -15,7 +15,7 @@ host_redis = os.getenv("REDIS_HOST", "localhost")
 def background_task(data):
     r = Redis(host=host_redis, port=6379, decode_responses=True)
     print("Procesando en segundo plano:", type(data))
-    url = f"http://{host}:{port}/api/chat/v1"
+    url = f"http://{host}:{port}/direct/api/chat/v1"
     
     print(f"Usando session_id: {data}")
     try:

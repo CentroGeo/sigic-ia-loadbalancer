@@ -23,7 +23,7 @@ q = Queue(connection=r)
 
 app = Flask(__name__)
 #CORS(app)
-CORS(app, resources={r"/*": {"origins": "*", "allow_headers": "*", "expose_headers": "*"}})
+#CORS(app, resources={r"/*": {"origins": "*", "allow_headers": "*", "expose_headers": "*"}})
 
 @app.route("/start", methods=["POST"])
 def start():
@@ -34,7 +34,7 @@ def start():
     data["session_id"] = session_id
     #if(data["type"] == "Preguntar" or data["type"] == "RAG"):
     if(data["chat_id"] == 0):
-        url = f"http://{load_balance_host}:{load_balance_port}/api/chat/history/generate"
+        url = f"http://{load_balance_host}:{load_balance_port}/direct/api/chat/history/generate"
             
         respuesta = requests.post(
             url,
