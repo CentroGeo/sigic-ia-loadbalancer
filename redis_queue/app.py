@@ -33,12 +33,20 @@ def start():
     
     data["session_id"] = session_id
     #if(data["type"] == "Preguntar" or data["type"] == "RAG"):
+    headers = dict(request.headers)
+    headers["Content-Type"] = "application/json"
+    
+    payload = {
+        "data": data,
+        "headers": headers
+    }
+    
     if(data["chat_id"] == 0):
         url = f"http://{load_balance_host}:{load_balance_port}/direct/api/chat/history/generate"
             
         respuesta = requests.post(
             url,
-            headers={"Content-type": "application/json"},
+            headers=headers,
             data=json.dumps(data),
         )
 
@@ -46,14 +54,14 @@ def start():
             data["chat_id"] = respuesta.json()["chat_id"]
             print("Solicitud exitosa!!!", data["chat_id"])
             
-            job = q.enqueue(background_task, json.dumps(data), job_id=session_id, retry=Retry(max=10, interval=20))
+            job = q.enqueue(background_task, json.dumps(payload), job_id=session_id, retry=Retry(max=10, interval=20))
             
             return jsonify({"job_id": job.id, 'session_id': session_id, "chat_id":data["chat_id"]})
         else:
             return jsonify({"error": str(respuesta.status_code)})            
 
     else:
-        job = q.enqueue(background_task, json.dumps(data), job_id=session_id, retry=Retry(max=10, interval=20))
+        job = q.enqueue(background_task, json.dumps(payload), job_id=session_id, retry=Retry(max=10, interval=20))
         print(f"Job ID: {job.id}")
         return jsonify({"job_id": job.id, 'session_id': session_id})    
 

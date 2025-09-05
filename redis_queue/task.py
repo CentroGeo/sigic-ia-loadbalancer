@@ -24,8 +24,9 @@ def background_task(data):
         print("Error parsing payload:", e)
         return
 
-    session_id = payload["session_id"]
-
+    session_id = payload['data']["session_id"]
+    body = json.dumps(payload['data']) #payload['data']
+    headers = payload['headers']
     init_date = time.time()
     # respuesta = requests.post(
     #     url,
@@ -62,8 +63,8 @@ def background_task(data):
         init_time = time.time()
         with requests.post(
             url,
-            headers={"Content-type": "application/json"},
-            data=data,
+            headers=headers,
+            data=body,
             stream=True,
         ) as resp:
             resp.raise_for_status()
