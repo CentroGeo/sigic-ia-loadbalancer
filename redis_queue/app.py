@@ -5,6 +5,7 @@ from rq.job import Job
 from redis import Redis
 from task import background_task
 from multiprocessing import Process
+from flasgger import Swagger
 import os
 import socket
 import requests
@@ -22,11 +23,35 @@ redis_dis = Redis(host=redis_host, port=redis_port, decode_responses=True)
 q = Queue(connection=r)
 
 app = Flask(__name__)
+swagger = Swagger(app)
 #CORS(app)
 #CORS(app, resources={r"/*": {"origins": "*", "allow_headers": "*", "expose_headers": "*"}})
 
 @app.route("/start", methods=["POST"])
 def start():
+    """
+    Start a new job
+    ---
+    parameters:
+      - name: data
+        in: body
+        type: string
+        required: true
+    responses:
+      200:
+        description: Start a new job
+        schema:
+          type: object
+          properties:
+            job_id:
+              type: string
+            session_id:
+              type: string
+              example: 0c4a4c2e-1d5e-4d7d-9d6a-8a8a8a8a8a8a
+            chat_id:
+              type: integer
+              example: 0     
+    """
     session_id = str(uuid.uuid4())
     data = json.loads(request.data)
     print("####START!!!!!")
@@ -110,6 +135,22 @@ def status():
 
 @app.route("/stream/<session_id>", methods=["GET"])
 def stream_from_redis(session_id):
+    """
+    Stream data from Redis
+    ---
+    parameters:
+      - name: session_id
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        description: Stream data from Redis
+        schema:
+          type: string
+          example: "data: [STREAM_COMPLETED]\n\n"
+          default: "data: [STREAM_COMPLETED]\n\n"
+    """
     if not session_id:
         return jsonify({"error": "Missing session_id"}), 400
 

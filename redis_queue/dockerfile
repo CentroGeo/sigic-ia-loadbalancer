@@ -10,6 +10,7 @@ RUN pip install redis
 RUN pip install requests
 RUN pip install rq
 RUN pip install flask-cors
+RUN pip install flasgger
 
 #CMD ["python", "apicontroller.py"]
 CMD ["python", "app.py"]
