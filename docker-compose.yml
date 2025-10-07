@@ -41,7 +41,7 @@ services:
       REDIS_HOST: host.docker.internal
       REDIS_PORT: 6379
       BALANCER_HOST: host.docker.internal
-      BALANCER_PORT: 8080
+      BALANCER_PORT: 80
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
