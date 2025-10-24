@@ -16,7 +16,7 @@ import uuid
 redis_host = os.getenv("REDIS_HOST", "localhost")
 redis_port = os.getenv("REDIS_PORT", "6379")
 load_balance_host = os.getenv("BALANCER_HOST", "nginx")
-load_balance_port = os.getenv("BALANCER_PORT", "8181")
+load_balance_port = os.getenv("BALANCER_PORT", "80")
 
 r = Redis(host=redis_host, port=redis_port)
 redis_dis = Redis(host=redis_host, port=redis_port, decode_responses=True)
