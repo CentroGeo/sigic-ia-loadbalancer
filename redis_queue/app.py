@@ -17,6 +17,8 @@ redis_host = os.getenv("REDIS_HOST", "localhost")
 redis_port = os.getenv("REDIS_PORT", "6379")
 load_balance_host = os.getenv("BALANCER_HOST", "nginx")
 load_balance_port = os.getenv("BALANCER_PORT", "80")
+nginx_base_url = os.getenv("NGINX_BASE_URL", "http://nginx")
+
 
 r = Redis(host=redis_host, port=redis_port)
 redis_dis = Redis(host=redis_host, port=redis_port, decode_responses=True)
@@ -67,7 +69,7 @@ def start():
     }
     
     if(data["chat_id"] == 0):
-        url = f"http://{load_balance_host}:{load_balance_port}/llmb/api/chat/history/generate"
+        url = f"{nginx_base_url}/llmb/api/chat/history/generate"
             
         respuesta = requests.post(
             url,
