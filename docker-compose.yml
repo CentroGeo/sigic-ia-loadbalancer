@@ -33,7 +33,7 @@ services:
   flask-app:
     build:
       context: ./redis_queue
-      dockerfile: dockerfile
+      dockerfile: redis_queue/Dockerfile
     container_name: flask-app
     ports:
       - "8000:8000"
