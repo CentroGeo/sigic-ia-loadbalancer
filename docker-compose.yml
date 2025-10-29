@@ -3,7 +3,7 @@ services:
     #image: nginx:latest
     build:
       context: ./nginx-conf
-      dockerfile: dockerfile
+      dockerfile: nginx-conf/Dockerfile
     container_name: llm-lb
     # ports:
     #   - "8080:8080"
