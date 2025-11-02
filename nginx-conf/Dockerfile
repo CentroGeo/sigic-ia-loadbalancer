@@ -20,7 +20,8 @@ RUN luarocks install lua-resty-openidc
 
 RUN mkdir -p /usr/local/openresty/lualib/
 
-COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
+# COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
+COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf.template
 COPY lua/auth.lua /usr/local/openresty/lualib/auth.lua
 
 COPY entrypoint.sh /usr/local/bin/
