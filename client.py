@@ -36,7 +36,7 @@ def chatear(context):
         # URL del endpoint
         #url = "http://10.2.5.5:8001/v1/chat/completions"
         #url = "http://10.2.13.44:8080/v1/chat/completions" #ip de mi local
-        url = "http://localhost:8000/start" #ip de mi local
+        url = "http://localhost:8001/start" #ip de mi local
 
         # Realizar la solicitud
         init_date = time.time()  #para tomar el tiempo
@@ -74,7 +74,7 @@ def chatear(context):
 
 def health(uuid):
     try:
-        url = "http://localhost:8000/stream/"+uuid #ip de mi local
+        url = "http://localhost:8001/stream/"+uuid #ip de mi local
 
         respuesta = requests.get(
             url,
