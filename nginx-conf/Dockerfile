@@ -23,7 +23,7 @@ RUN mkdir -p /usr/local/openresty/lualib/
 COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 COPY lua/auth.lua /usr/local/openresty/lualib/auth.lua
 
-COPY docker-entrypoint.sh /usr/local/bin/
+COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
