@@ -1,9 +1,9 @@
 from redis import Redis
-import time 
+import time
 import random
 import requests
 import json
-import os 
+import os
 import uuid
 import ast
 
@@ -12,6 +12,7 @@ load_balance_port = os.getenv("BALANCER_PORT", "80")
 nginx_base_url = os.getenv("NGINX_BASE_URL", "http://nginx")
 redis_host = os.getenv("REDIS_HOST", "localhost")
 redis_port = os.getenv("REDIS_PORT", "6379")
+
 
 def background_task(data):
     r = Redis(host=redis_host, port=redis_port, decode_responses=True)
@@ -26,7 +27,7 @@ def background_task(data):
         return
 
     session_id = payload['data']["session_id"]
-    body = json.dumps(payload['data']) #payload['data']
+    body = json.dumps(payload['data'])  #payload['data']
     headers = payload['headers']
     init_date = time.time()
     # respuesta = requests.post(
@@ -35,7 +36,7 @@ def background_task(data):
     #     data=data,
     #     #stream=True
     # )
-    
+
     # if respuesta.status_code == 200:
     #     print("Solicitud exitosa")
     #     try:
@@ -45,12 +46,12 @@ def background_task(data):
     #         print("\n\n**** Respuesta JSON:\n", json.dumps(data, indent=2))
     #         delta_date = end_date - init_date
     #         print("tiempo (segundos):", delta_date)
-            
+
     #         #respuesta_chatbot = data["choices"][0]["message"]["content"]
     #         respuesta_chatbot = data['message']
     #         #print("\n\n**** Respuesta modelo: \n",respuesta_chatbot)
     #         return respuesta_chatbot                
-        
+
     #     except json.JSONDecodeError:
     #         # Si la respuesta no es JSON, manejar como texto
     #         print("\n\n*** Respuesta en texto:\n", respuesta.text)
@@ -59,14 +60,14 @@ def background_task(data):
     #     print(f"Error en la solicitud: {respuesta.status_code}")
     #     print(respuesta.text)
     #     raise Exception("Error intencional para probar retry", respuesta.text)
-    
+
     try:
         init_time = time.time()
         with requests.post(
-            url,
-            headers=headers,
-            data=body,
-            stream=True,
+                url,
+                headers=headers,
+                data=body,
+                stream=True,
         ) as resp:
             resp.raise_for_status()
 
@@ -74,7 +75,7 @@ def background_task(data):
                 if line:
                     #line = line.replace("data: ", "")
                     #print("line: ",line)
-                    
+
                     try:
                         #print(f"[DEBUG] tipo de line: {type(line)} - contenido: {repr(line)}")
                         if line.startswith("b'") or line.startswith('b"'):
@@ -97,5 +98,3 @@ def background_task(data):
     except Exception as e:
         print(f"[Error] {str(e)}")
         r.rpush(f"stream:{session_id}", f"[ERROR] {str(e)}")
-
-

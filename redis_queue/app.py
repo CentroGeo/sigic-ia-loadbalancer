@@ -83,15 +83,26 @@ def start():
             data["chat_id"] = respuesta.json()["chat_id"]
             print("Solicitud exitosa!!!", data["chat_id"])
 
-            job = q.enqueue(background_task, json.dumps(payload), job_id=session_id, retry=Retry(max=10, interval=20))
+            job = q.enqueue(
+                background_task,
+                args=(json.dumps(payload),),
+                job_id=session_id,
+                retry=Retry(max=10, interval=20),
+                timeout=job_timeout_seconds
+            )
 
             return jsonify({"job_id": job.id, 'session_id': session_id, "chat_id": data["chat_id"]})
         else:
             return jsonify({"error": str(respuesta.status_code)})
 
     else:
-        job = q.enqueue(background_task, json.dumps(payload), job_id=session_id, retry=Retry(max=10, interval=20),
-                        timeout=job_timeout_seconds)
+        job = q.enqueue(
+            background_task,
+            args=(json.dumps(payload),),
+            job_id=session_id,
+            retry=Retry(max=10, interval=20),
+            timeout=job_timeout_seconds
+        )
         print(f"Job ID: {job.id}")
         return jsonify({"job_id": job.id, 'session_id': session_id})
 
