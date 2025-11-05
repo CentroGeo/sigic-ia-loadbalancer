@@ -7,7 +7,7 @@ import os
 import uuid
 import ast
 
-ia_engine_base_url = os.getenv("IA_ENGINE_BASE_URL", "http://ia-engine")
+ia_engine_base_url = os.getenv("IA_ENGINE_BASE_URL", "http://ia-engine:8000")
 ia_engine_path_url = os.getenv("IA_ENGINE_PATH_URL", "/api/chat/v1")
 redis_host = os.getenv("REDIS_HOST", "localhost")
 redis_port = os.getenv("REDIS_PORT", "6379")
