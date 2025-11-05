@@ -17,7 +17,7 @@ def background_task(data):
     r = Redis(host=redis_host, port=redis_port, decode_responses=True)
     print("Procesando en segundo plano:", type(data))
     url = f"{nginx_base_url}/llmb/api/chat/v1"
-    
+    print(f"url: {url}")
     print(f"Usando session_id: {data}")
     try:
         payload = json.loads(data)
