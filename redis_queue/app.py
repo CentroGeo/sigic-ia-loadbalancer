@@ -20,7 +20,6 @@ load_balance_port = os.getenv("BALANCER_PORT", "80")
 nginx_base_url = os.getenv("NGINX_BASE_URL", "http://nginx")
 job_timeout_seconds = int(os.getenv("JOB_TIMEOUT_SECONDS", 300))
 
-
 r = Redis(host=redis_host, port=redis_port)
 redis_dis = Redis(host=redis_host, port=redis_port, decode_responses=True)
 q = Queue(connection=r)
@@ -71,7 +70,7 @@ def start():
         "headers": headers
     }
 
-    if (data["chat_id"] == 0):
+    if data["chat_id"] == 0:
         url = f"{nginx_base_url}/llmb/api/chat/history/generate"
 
         respuesta = requests.post(
@@ -91,7 +90,8 @@ def start():
             return jsonify({"error": str(respuesta.status_code)})
 
     else:
-        job = q.enqueue(background_task, json.dumps(payload), job_id=session_id, retry=Retry(max=10, interval=20), timeout=job_timeout_seconds)
+        job = q.enqueue(background_task, json.dumps(payload), job_id=session_id, retry=Retry(max=10, interval=20),
+                        timeout=job_timeout_seconds)
         print(f"Job ID: {job.id}")
         return jsonify({"job_id": job.id, 'session_id': session_id})
 
