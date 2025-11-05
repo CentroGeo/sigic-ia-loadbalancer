@@ -22,7 +22,7 @@ job_timeout_seconds = int(os.getenv("JOB_TIMEOUT_SECONDS", 300))
 
 r = Redis(host=redis_host, port=redis_port)
 redis_dis = Redis(host=redis_host, port=redis_port, decode_responses=True)
-q = Queue(connection=r)
+q = Queue(connection=r, default_timeout=job_timeout_seconds*2)
 
 app = Flask(__name__)
 swagger = Swagger(app)
