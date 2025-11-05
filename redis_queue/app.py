@@ -77,6 +77,7 @@ def start():
             url,
             headers=headers,
             data=json.dumps(data),
+            timeout=int(os.environ.get("OLLAMA_TIMEOUT", 600)),
         )
 
         if respuesta.status_code == 200:

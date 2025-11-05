@@ -68,6 +68,7 @@ def background_task(data):
                 headers=headers,
                 data=body,
                 stream=True,
+                timeout=int(os.environ.get("OLLAMA_TIMEOUT", 600)),
         ) as resp:
             resp.raise_for_status()
 
