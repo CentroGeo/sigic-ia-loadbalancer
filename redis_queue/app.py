@@ -88,7 +88,8 @@ def start():
                 args=(json.dumps(payload),),
                 job_id=session_id,
                 retry=Retry(max=10, interval=20),
-                timeout=job_timeout_seconds
+                timeout=job_timeout_seconds,
+                result_ttl=3600
             )
 
             return jsonify({"job_id": job.id, 'session_id': session_id, "chat_id": data["chat_id"]})
@@ -101,7 +102,8 @@ def start():
             args=(json.dumps(payload),),
             job_id=session_id,
             retry=Retry(max=10, interval=20),
-            timeout=job_timeout_seconds
+            timeout=job_timeout_seconds,
+            result_ttl=3600
         )
         print(f"Job ID: {job.id}")
         return jsonify({"job_id": job.id, 'session_id': session_id})
