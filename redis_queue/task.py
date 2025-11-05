@@ -7,17 +7,16 @@ import os
 import uuid
 import ast
 
-load_balance_host = os.getenv("BALANCER_HOST", "nginx")
-load_balance_port = os.getenv("BALANCER_PORT", "80")
-nginx_base_url = os.getenv("NGINX_BASE_URL", "http://nginx")
+ia_engine_base_url = os.getenv("IA_ENGINE_BASE_URL", "http://ia-engine")
+ia_engine_path_url = os.getenv("IA_ENGINE_PATH_URL", "/api/chat/v1")
 redis_host = os.getenv("REDIS_HOST", "localhost")
 redis_port = os.getenv("REDIS_PORT", "6379")
 
 def background_task(data):
     r = Redis(host=redis_host, port=redis_port, decode_responses=True)
     print("Procesando en segundo plano:", type(data))
-    url = f"{nginx_base_url}/llmb/api/chat/v1"
-    
+    url = f"{ia_engine_base_url}{ia_engine_path_url}"
+
     print(f"Usando session_id: {data}")
     try:
         payload = json.loads(data)
