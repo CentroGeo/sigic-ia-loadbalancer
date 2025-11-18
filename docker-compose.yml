@@ -3,7 +3,7 @@ services:
     #image: nginx:latest
     build:
       context: ./nginx-conf
-      dockerfile: nginx-conf/Dockerfile
+      dockerfile: Dockerfile
     container_name: llm-lb
     env_file:
       - .env
@@ -13,11 +13,11 @@ services:
       #- ./nginx-conf/nginx.conf:/etc/nginx/nginx.conf:ro
       #- ./nginx-conf/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
     depends_on:
-      - flask-app
+      - ia-queue
     extra_hosts:
-      - "modulo-ia-django:host-gateway"
+      - "ia-engine:host-gateway"
       - "redis:host-gateway"
-      - "flask-app:host-gateway"
+      - "ia-queue:host-gateway"
     # networks:
     #   - red_geolex
     network_mode: host
@@ -30,11 +30,11 @@ services:
     networks:
       - red_geolex
 
-  flask-app:
+  ia-queue:
     build:
       context: ./redis_queue
-      dockerfile: redis_queue/Dockerfile
-    container_name: flask-app
+      dockerfile: Dockerfile
+    container_name: ia-queue
     ports:
       - "8001:8001"
     depends_on:

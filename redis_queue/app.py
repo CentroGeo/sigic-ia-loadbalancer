@@ -17,7 +17,7 @@ redis_host = os.getenv("REDIS_HOST", "localhost")
 redis_port = os.getenv("REDIS_PORT", "6379")
 load_balance_host = os.getenv("BALANCER_HOST", "nginx")
 load_balance_port = os.getenv("BALANCER_PORT", "80")
-nginx_base_url = os.getenv("NGINX_BASE_URL", "http://nginx")
+nginx_base_url = os.getenv("NGINX_BASE_URL", "http://nginx:80")
 job_timeout_seconds = int(os.getenv("JOB_TIMEOUT_SECONDS", 300))
 
 r = Redis(host=redis_host, port=redis_port)
