@@ -19,9 +19,11 @@ RUN luarocks install lua-resty-http
 RUN luarocks install lua-resty-openidc
 
 RUN mkdir -p /usr/local/openresty/lualib/
+RUN mkdir -p /etc/nginx/upstreams
 
 COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 COPY lua/auth.lua /usr/local/openresty/lualib/auth.lua
+COPY ia-engine.conf.template /etc/nginx/upstreams/ia-engine.conf.template
 
 COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
