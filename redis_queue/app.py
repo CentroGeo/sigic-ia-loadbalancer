@@ -67,7 +67,7 @@ def start():
     }
     
     if(data["chat_id"] == 0):
-        url = f"http://{load_balance_host}:{load_balance_port}/direct/api/chat/history/generate"
+        url = f"http://{load_balance_host}:{load_balance_port}/llmb/api/chat/history/generate"
             
         respuesta = requests.post(
             url,
