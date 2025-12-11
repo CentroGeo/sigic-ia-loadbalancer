@@ -15,9 +15,9 @@ services:
     depends_on:
       - flask-app
     extra_hosts:
-      - "modulo-ia-django:host-gateway"
+      - "ia-engine:host-gateway"
       - "redis:host-gateway"
-      - "flask-app:host-gateway"
+      - "ia-queue:host-gateway"
     # networks:
     #   - red_geolex
     network_mode: host
@@ -34,7 +34,7 @@ services:
     build:
       context: ./redis_queue
       dockerfile: dockerfile
-    container_name: flask-app
+    container_name: ia-queue
     ports:
       - "8000:8000"
     depends_on:
