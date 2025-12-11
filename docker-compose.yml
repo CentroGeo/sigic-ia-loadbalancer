@@ -5,6 +5,8 @@ services:
       context: ./nginx-conf
       dockerfile: nginx-conf/Dockerfile
     container_name: llm-lb
+    env_file:
+      - .env
     # ports:
     #   - "8080:8080"
     #volumes:
@@ -37,11 +39,13 @@ services:
       - "8000:8000"
     depends_on:
       - redis
-    environment:
-      REDIS_HOST: host.docker.internal
-      REDIS_PORT: 6379
-      BALANCER_HOST: host.docker.internal
-      BALANCER_PORT: 80
+    env_file:
+      - .env
+    # environment:
+    #   REDIS_HOST: host.docker.internal
+    #   REDIS_PORT: 6379
+    #   BALANCER_HOST: host.docker.internal
+    #   BALANCER_PORT: 80
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
