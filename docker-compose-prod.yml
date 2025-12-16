@@ -13,7 +13,7 @@ services:
       #- ./nginx-conf/nginx.conf:/etc/nginx/nginx.conf:ro
       #- ./nginx-conf/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
     depends_on:
-      - flask-app
+      - ia-queue
     extra_hosts:
       - "ia-engine:host-gateway"
       - "redis:host-gateway"
@@ -30,13 +30,13 @@ services:
     networks:
       - red_geolex
 
-  flask-app:
+  ia-queue:
     build:
       context: ./redis_queue
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     container_name: ia-queue
     ports:
-      - "8000:8000"
+      - "8001:8001"
     depends_on:
       - redis
     env_file:
