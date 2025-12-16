@@ -17,4 +17,4 @@ CMD ["python", "app.py"]
 
 #docker run --name redis -p 6379:6379 -d redis
 #docker build -t flask-app .
-#docker run -p 8000:8000 flask-app
+#docker run -p 8001:8001 flask-app
