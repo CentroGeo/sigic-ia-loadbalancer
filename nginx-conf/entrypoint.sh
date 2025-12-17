@@ -17,17 +17,15 @@ echo "[entrypoint] Generando upstream dinámico: ia-engine"
 
 SERVER_LINES=""
 
-for HOST in $IA_ENGINE_SERVERS; do
-  SERVER_LINES="$(printf "%s    server %s;\n" "$SERVER_LINES" "$HOST")"
-done
+IA_ENGINE_SERVERS="${IA_ENGINE_SERVERS//,/ }"
 
-
-SERVER_LINES_ESCAPED=$(printf '%s' "$SERVER_LINES" | sed 's/[\/&]/\\&/g')
-
-# Renderizar template
-sed "s|{{IA_ENGINE_SERVERS}}|$SERVER_LINES_ESCAPED|" \
-    /etc/nginx/upstreams/ia-engine.conf.template \
-    > "$IA_ENGINE_CONF"
+{
+    echo "upstream ia-engine {"
+    for HOST in $IA_ENGINE_SERVERS; do
+        echo "    server $HOST;"
+    done
+    echo "}"
+} > "$IA_ENGINE_CONF"
 
 echo "[entrypoint] Upstream generado:"
 cat "$IA_ENGINE_CONF"
