@@ -61,7 +61,6 @@ def start():
     print("####START!!!!!")
 
     data["session_id"] = session_id
-    #if(data["type"] == "Preguntar" or data["type"] == "RAG"):
     headers = dict(request.headers)
     headers["Content-Type"] = "application/json"
 
@@ -82,7 +81,6 @@ def start():
 
         if respuesta.status_code == 200:
             data["chat_id"] = respuesta.json()["chat_id"]
-            print("Solicitud exitosa!!!", data["chat_id"])
 
             job = q.enqueue(
                 background_task,
@@ -106,7 +104,6 @@ def start():
             timeout=job_timeout_seconds,
             result_ttl=3600
         )
-        print(f"Job ID: {job.id}")
         return jsonify({"job_id": job.id, 'session_id': session_id})
 
 
@@ -199,12 +196,9 @@ def stream_from_redis(session_id):
                 yield f"data: {json.dumps(info)}\n\n"
             last_index += len(messages)
 
-            # Terminar si hay señal de finalización
             if redis_dis.get(done_key):
                 yield "event: done\ndata: [STREAM_COMPLETED]\n\n"
                 break
-
-            #time.sleep(0.5)
 
     return Response(generate(), mimetype="text/event-stream")
 
@@ -215,7 +209,3 @@ if __name__ == "__main__":
 
     port = int(os.environ.get("PORT", 8001))
     app.run(host='0.0.0.0', port=port)
-
-#docker build -t flask-app .
-#docker run -d --name flask-app -p 8001:8001 flask-app
-#docker run -p 8001:8001 flask-app
