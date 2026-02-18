@@ -21,6 +21,7 @@ services:
     # networks:
     #   - red_geolex
     network_mode: host
+    restart: unless-stopped
 
   redis:
     image: redis:latest
