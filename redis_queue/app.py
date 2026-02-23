@@ -25,7 +25,17 @@ redis_dis = Redis(host=redis_host, port=redis_port, decode_responses=True)
 q = Queue(connection=r, default_timeout=job_timeout_seconds*2)
 
 app = Flask(__name__)
-swagger = Swagger(app)
+
+swagger_template = {
+    "swagger": "2.0",
+    "info": {
+        "title": "Api de Queue",
+        "description": "Documentación",
+        "version": "1.0.0"
+    }
+}
+
+swagger = Swagger(app,  template=swagger_template)
 
 
 #CORS(app)
