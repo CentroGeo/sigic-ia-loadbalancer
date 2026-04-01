@@ -36,9 +36,9 @@ jobs:
       - name: Build IA Queue
         run: |
           docker build \
-            -f ia-lb/redis_queue/Dockerfile \
+            -f redis_queue/Dockerfile \
             -t ${{ steps.image.outputs.QUEUE_IMAGE }}:${{ steps.tag.outputs.TAG }} \
-            ia-lb/redis_queue
+            redis_queue
 
       - name: Tag & Push IA Queue
         run: |
@@ -56,9 +56,9 @@ jobs:
       - name: Build IA LB
         run: |
           docker build \
-            -f ia-lb/nginx-conf/Dockerfile \
+            -f nginx-conf/Dockerfile \
             -t ${{ steps.image.outputs.LB_IMAGE }}:${{ steps.tag.outputs.TAG }} \
-            ia-lb/nginx-conf
+            nginx-conf
 
       - name: Tag & Push IA LB
         run: |
