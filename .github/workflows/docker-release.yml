@@ -1,0 +1,71 @@
+name: Build & Push IA LB Images
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Get tag
+        id: tag
+        run: echo "TAG=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+
+      - name: Set image base (lowercase)
+        id: image
+        run: |
+          ROOT=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "QUEUE_IMAGE=${ROOT}/ia-queue" >> $GITHUB_OUTPUT
+          echo "LB_IMAGE=${ROOT}/ia-lb" >> $GITHUB_OUTPUT
+
+      - name: Login to GHCR
+        run: echo "${{ secrets.GHCR_GEOINTSIGIC_PAT }}" | docker login ghcr.io -u geointsigic --password-stdin
+
+      # -------------------------
+      # IA QUEUE
+      # -------------------------
+      - name: Build IA Queue
+        run: |
+          docker build \
+            -f ia-lb/redis_queue/Dockerfile \
+            -t ${{ steps.image.outputs.QUEUE_IMAGE }}:${{ steps.tag.outputs.TAG }} \
+            ia-lb/redis_queue
+
+      - name: Tag & Push IA Queue
+        run: |
+          IMAGE="${{ steps.image.outputs.QUEUE_IMAGE }}"
+          VERSION="${{ steps.tag.outputs.TAG }}"
+
+          docker push "$IMAGE:$VERSION"
+
+          docker tag "$IMAGE:$VERSION" "$IMAGE:latest"
+          docker push "$IMAGE:latest"
+
+      # -------------------------
+      # IA LOAD BALANCER
+      # -------------------------
+      - name: Build IA LB
+        run: |
+          docker build \
+            -f ia-lb/nginx-conf/Dockerfile \
+            -t ${{ steps.image.outputs.LB_IMAGE }}:${{ steps.tag.outputs.TAG }} \
+            ia-lb/nginx-conf
+
+      - name: Tag & Push IA LB
+        run: |
+          IMAGE="${{ steps.image.outputs.LB_IMAGE }}"
+          VERSION="${{ steps.tag.outputs.TAG }}"
+
+          docker push "$IMAGE:$VERSION"
+
+          docker tag "$IMAGE:$VERSION" "$IMAGE:latest"
+          docker push "$IMAGE:latest"
