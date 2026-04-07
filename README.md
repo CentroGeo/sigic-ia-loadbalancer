@@ -18,4 +18,6 @@ docker exec -it redis redis-cli
 # stop apps
 docker-compose down
 
-
+https://iam.dev.geoint.mx/realms/sigic
+https://iam.dev.geoint.mx/realms/sigic_secihti
+https://iam.dev.geoint.mx/realms/sigic_dgsnic
